@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT UI - Ultra Quality & Rapid</title>
+    <title>ChatGPT UI - Smart AI & Auto Image</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://js.puter.com/v2/"></script>
     <style>
@@ -114,14 +114,14 @@
     <div id="main-chat">
         <header>
             <i class="fa-solid fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
-            <span>AI Rapid & High Quality Image</span>
+            <span>AI Smart Instant Image</span>
             <div></div>
         </header>
 
         <div id="messages-container">
             <div class="message-row ai">
                 <div class="avatar">AI</div>
-                <div class="message-text">Salut! Poți pune întrebări sau folosi <b>/imagine</b> urmat de orice descriere detaliată (ex: <i>/imagine ford mustang 1969 roșu fotorealist 8k pe autostradă</i>).</div>
+                <div class="message-text">Salut! Zi-mi ce vrei să afli sau spune-mi simplu <b>"creează o poză cu o mașină mustang"</b> și o generez direct, fără alte întrebări!</div>
             </div>
         </div>
 
@@ -195,6 +195,29 @@
             return textDiv;
         }
 
+        // Verifică dacă mesajul cere o imagine (fără să fie nevoie de /imagine)
+        function isImageRequest(text) {
+            const lower = text.toLowerCase();
+            const keywords = ['imagine', 'poza', 'creeaza', 'creează', 'deseneaza', 'desenează', 'fă o poză', 'fa o poza', 'genereaza', 'generează', '/imagine'];
+            return keywords.some(kw => lower.includes(kw));
+        }
+
+        function generateImage(prompt, aiBox) {
+            // Curățăm prompt-ul de cuvinte de umplutură
+            let cleanPrompt = prompt.toLowerCase()
+                .replace(/creeaza|creează|genereaza|generează|fa|fă|o|poza|poză|imagine|cu|deseneaza|desenează|\/imagine/g, '')
+                .trim();
+
+            if (!cleanPrompt) cleanPrompt = prompt;
+
+            // Adăugăm automat fundal, detalii, lumini și aspect fotorealist
+            const enhancedPrompt = `${cleanPrompt}, stunning photorealistic, ford mustang muscle car, dramatic lighting, high detail, 8k resolution, cinematic atmosphere`;
+            const seed = Math.floor(Math.random() * 1000000);
+            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
+
+            aiBox.innerHTML = `Am generat poza direct:<br><img src="${imgUrl}" alt="${cleanPrompt}">`;
+        }
+
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
@@ -204,25 +227,22 @@
             userInput.value = '';
             userInput.style.height = 'auto';
 
-            // Generare imagini folosind motorul FLUX de înaltă claritate
-            if (text.toLowerCase().startsWith('/imagine')) {
-                const prompt = text.replace(/\/imagine/i, '').trim();
-                const aiBox = appendMessage('ai', 'Se generează imaginea ultra-detaliată...');
-                const seed = Math.floor(Math.random() * 1000000);
-                const enhancedPrompt = `${prompt}, photorealistic, 8k resolution, highly detailed, cinematic lighting`;
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
-                aiBox.innerHTML = `Iată imaginea generată pentru <i>"${prompt}"</i>:<br><img src="${imgUrl}" alt="${prompt}">`;
+            const aiBox = appendMessage('ai', 'Se procesează...');
+
+            // Dacă utilizatorul cere o poză/imagine, o generăm pe loc
+            if (isImageRequest(text)) {
+                generateImage(text, aiBox);
                 return;
             }
 
-            const aiBox = appendMessage('ai', 'Se gândește...');
-
+            // Chat Text obișnuit cu instrucțiune să nu mai pună întrebări inutile
             try {
-                const response = await puter.ai.chat(text);
+                const systemPrompt = "Răspunde scurt, la obiect și direct. Nu pune întrebări inutile înapoi.";
+                const response = await puter.ai.chat(`${systemPrompt}\nUtilizator: ${text}`);
                 const fullText = typeof response === 'object' ? response.toString() : response;
                 typeWriterEffect(aiBox, fullText);
             } catch (err) {
-                aiBox.textContent = "Am întâmpinat o mică eroare de conexiune. Te rog încearcă din nou!";
+                aiBox.textContent = "A apărut o eroare de rețea. Te rog reîncearcă!";
             }
         }
 
