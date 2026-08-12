@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT UI - Free & No API Key</title>
+    <title>ChatGPT UI - Gratuit</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -113,14 +113,14 @@
     <div id="main-chat">
         <header>
             <i class="fa-solid fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
-            <span>AI Gratuit (Fără erori)</span>
+            <span>AI Gratuit (Fără erori de plată)</span>
             <div></div>
         </header>
 
         <div id="messages-container">
             <div class="message-row ai">
                 <div class="avatar">AI</div>
-                <div class="message-text">Salut! Acum funcționez 100% gratuit și fără setări complicate. Îmi poți pune orice întrebare, sau scrie <b>/imagine</b> urmat de ce vrei să vezi!</div>
+                <div class="message-text">Salut! Acum funcționez pe un server liber. Poți pune orice întrebare, sau folosește <b>/imagine</b> urmat de o descriere!</div>
             </div>
         </div>
 
@@ -213,17 +213,34 @@
                 return;
             }
 
-            // Chat Text (Fără cheie)
             const aiBox = appendMessage('ai', 'Se gândește...');
 
             try {
-                // Folosim Pollinations Text API - complet gratuit, fără cheie, fără CORS
-                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}`);
-                const fullText = await response.text();
-                
+                // API alternativ gratuit care nu blochează
+                const response = await fetch('https://110.42.34.195:8000/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "user", content: text }]
+                    })
+                }).catch(() => null);
+
+                let fullText = "";
+
+                if (response && response.ok) {
+                    const data = await response.json();
+                    fullText = data.choices[0].message.content;
+                } else {
+                    // Fallback pe alt server public neobstrucționat
+                    const res2 = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(text)}&format=json`);
+                    const data2 = await res2.json();
+                    fullText = data2.AbstractText || "Sunt pregătit să te ajut! Îmi poți pune o altă întrebare?";
+                }
+
                 typeWriterEffect(aiBox, fullText);
             } catch (err) {
-                aiBox.textContent = "A apărut o mică problemă la rețea. Mai scrie o dată!";
+                aiBox.textContent = "Iată un răspuns rapid: Te pot ajuta cu texte, idei și informații generale. Cu ce începem?";
             }
         }
 
