@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT UI - Rapid & Gratuit</title>
+    <title>ChatGPT UI - Ultra Quality & Rapid</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Biblioteca Puter JS pentru AI gratuit si rapid -->
     <script src="https://js.puter.com/v2/"></script>
     <style>
         :root {
@@ -115,14 +114,14 @@
     <div id="main-chat">
         <header>
             <i class="fa-solid fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
-            <span>AI Rapid (Fără limită)</span>
+            <span>AI Rapid & High Quality Image</span>
             <div></div>
         </header>
 
         <div id="messages-container">
             <div class="message-row ai">
                 <div class="avatar">AI</div>
-                <div class="message-text">Salut! Acum răspund mult mai rapid. Întreabă-mă orice sau folosește <b>/imagine</b> pentru poze!</div>
+                <div class="message-text">Salut! Poți pune întrebări sau folosi <b>/imagine</b> urmat de orice descriere detaliată (ex: <i>/imagine ford mustang 1969 roșu fotorealist 8k pe autostradă</i>).</div>
             </div>
         </div>
 
@@ -205,23 +204,22 @@
             userInput.value = '';
             userInput.style.height = 'auto';
 
-            // Poze (Fără cheie)
+            // Generare imagini folosind motorul FLUX de înaltă claritate
             if (text.toLowerCase().startsWith('/imagine')) {
                 const prompt = text.replace(/\/imagine/i, '').trim();
-                const aiBox = appendMessage('ai', 'Generez imaginea...');
+                const aiBox = appendMessage('ai', 'Se generează imaginea ultra-detaliată...');
                 const seed = Math.floor(Math.random() * 1000000);
-                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
-                aiBox.innerHTML = `Iată imaginea ta pentru <i>"${prompt}"</i>:<br><img src="${imgUrl}">`;
+                const enhancedPrompt = `${prompt}, photorealistic, 8k resolution, highly detailed, cinematic lighting`;
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
+                aiBox.innerHTML = `Iată imaginea generată pentru <i>"${prompt}"</i>:<br><img src="${imgUrl}" alt="${prompt}">`;
                 return;
             }
 
             const aiBox = appendMessage('ai', 'Se gândește...');
 
             try {
-                // Răspuns ultra-rapid prin Puter AI (Free GPT-4o-mini)
                 const response = await puter.ai.chat(text);
                 const fullText = typeof response === 'object' ? response.toString() : response;
-                
                 typeWriterEffect(aiBox, fullText);
             } catch (err) {
                 aiBox.textContent = "Am întâmpinat o mică eroare de conexiune. Te rog încearcă din nou!";
@@ -231,7 +229,6 @@
         function typeWriterEffect(element, text) {
             element.innerHTML = "";
             let i = 0;
-            // Viteza crescută la 2ms pentru un răspuns aproape instant
             const timer = setInterval(() => {
                 if (i < text.length) {
                     element.innerHTML += text.charAt(i);
