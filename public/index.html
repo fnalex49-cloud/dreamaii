@@ -141,6 +141,8 @@
     </div>
 
     <script>
+        const GEMINI_API_KEY = "AQ.Ab8RN6KqINUeAEY_luKJKfFaA1rzeQc0gvuXrE5PU7-alMia6A";
+
         const container = document.getElementById('messages-container');
         const userInput = document.getElementById('user-input');
         const historyList = document.getElementById('history-list');
@@ -225,26 +227,55 @@
                 return;
             }
 
-            // Chat Text
+            // Chat Text via Proxy CORS Direct (Sunt încercate automat ambele modele v1beta/v1)
             const aiBox = appendMessage('ai', 'Se gândește...');
 
+            const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: text })
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }]
+                    })
                 });
 
                 const data = await response.json();
 
                 if (data.error) {
-                    aiBox.textContent = "Eroare: " + (data.error.message || data.error);
+                    // Fallback la modelul secundar dacă primul e ocupat
+                    fetchFallback(text, aiBox);
                 } else {
                     const fullText = data.candidates[0].content.parts[0].text;
                     typeWriterEffect(aiBox, fullText);
                 }
             } catch (err) {
-                aiBox.textContent = "A apărut o eroare la conectare.";
+                fetchFallback(text, aiBox);
+            }
+        }
+
+        async function fetchFallback(text, aiBox) {
+            const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+            try {
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }]
+                    })
+                });
+                const data = await response.json();
+                if(data.candidates && data.candidates[0]) {
+                    typeWriterEffect(aiBox, data.candidates[0].content.parts[0].text);
+                } else {
+                    aiBox.textContent = "Verifică dacă cheia API este activă pe contul tău Google Studio.";
+                }
+            } catch (e) {
+                aiBox.textContent = "Eroare la conectare. Te rugăm să reîncerci.";
             }
         }
 
