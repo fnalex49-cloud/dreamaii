@@ -1,289 +1,408 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChatGPT UI - Universal Mobile & Desktop</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Biblioteca Puter JS -->
-    <script src="https://js.puter.com/v2/"></script>
-    <style>
-        :root {
-            --bg-main: #343541;
-            --bg-sidebar: #202123;
-            --bg-msg-user: #343541;
-            --bg-msg-ai: #444654;
-            --text-main: #ececf1;
-            --border-color: #4d4d4f;
-            --input-bg: #40414f;
-        }
+<meta charset="UTF-8">
+<title>Cosmic Dice</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 85% 60%, rgba(255,255,255,0.4), transparent),
+      radial-gradient(circle at 50% 0%, #1a1f3a, #05060f 70%);
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 14px 50px;
+  }
 
-        .light-theme {
-            --bg-main: #ffffff;
-            --bg-sidebar: #f7f7f8;
-            --bg-msg-user: #ffffff;
-            --bg-msg-ai: #f7f7f8;
-            --text-main: #374151;
-            --border-color: #e5e5e5;
-            --input-bg: #ffffff;
-        }
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 8px 20px;
+    margin-bottom: 6px;
+    background: rgba(255,255,255,0.03);
+  }
+  .logo-bar .cube { font-size: 1.2rem; }
+  .logo-bar .name {
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    background: linear-gradient(90deg,#ff5e5e,#ffb347,#ffe45e,#6effa1,#5ec8ff,#c07bff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Söhne', 'Segoe UI', Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
+  .counter {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e8ecff;
+    margin: 10px 0 2px;
+  }
 
-        #sidebar {
-            width: 260px; background-color: var(--bg-sidebar); display: flex; flex-direction: column;
-            padding: 10px; border-right: 1px solid var(--border-color); transition: transform 0.3s ease;
-            z-index: 1000;
-        }
+  .tagline {
+    color: #9aa3c7;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
 
-        .new-chat-btn {
-            border: 1px solid var(--border-color); border-radius: 5px; padding: 12px;
-            background: transparent; color: var(--text-main); text-align: left; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-bottom: 10px;
-        }
-        .new-chat-btn:hover { background-color: rgba(255,255,255,0.05); }
+  .possible-title {
+    font-size: 0.7rem;
+    color: #8a92b8;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
 
-        #history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .history-item {
-            padding: 10px; border-radius: 5px; cursor: pointer; font-size: 0.85rem;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;
-        }
-        .history-item:hover { background-color: rgba(255,255,255,0.05); }
+  .pill-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 26px;
+  }
+  .pill {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #05060f;
+  }
 
-        .theme-toggle {
-            padding: 12px; border-top: 1px solid var(--border-color); cursor: pointer;
-            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
-        }
+  .dice-row {
+    display: flex;
+    gap: 14px;
+    margin: 6px 0 26px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .die {
+    width: 78px;
+    height: 78px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 22px 2px var(--glow, #333);
+    border: 2px solid rgba(255,255,255,0.5);
+    background: #111;
+    transition: transform .15s ease;
+  }
+  .die.rolling { animation: spin 0.08s linear infinite; }
+  @keyframes spin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(12deg) scale(1.04); }
+    100% { transform: rotate(-12deg) scale(0.96); }
+  }
+  .die .dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+  }
 
-        #main-chat { flex: 1; display: flex; flex-direction: column; height: 100vh; height: 100dvh; position: relative; width: 100%; }
-        header { padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .sidebar-toggle { cursor: pointer; font-size: 1.3rem; padding: 5px; }
+  .id-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #f4d94a;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    padding: 8px 18px;
+    margin-bottom: 14px;
+  }
+  .id-bar .verify {
+    border-left: 1px solid rgba(0,0,0,0.3);
+    padding-left: 10px;
+    letter-spacing: 1px;
+  }
 
-        #messages-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth; }
-        
-        .message-row { padding: 20px 15%; display: flex; gap: 15px; border-bottom: 1px solid var(--border-color); }
-        .message-row.user { background-color: var(--bg-msg-user); }
-        .message-row.ai { background-color: var(--bg-msg-ai); }
+  button#rollBtn {
+    background: linear-gradient(90deg,#4fc8ff,#7ee2ff);
+    border: none;
+    color: #012;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 14px 60px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(79,200,255,0.6);
+    transition: transform .1s ease;
+    text-transform: uppercase;
+  }
+  button#rollBtn:active { transform: scale(0.96); }
+  button#rollBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .avatar {
-            width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 0.85rem; flex-shrink: 0;
-        }
-        .user .avatar { background-color: #5436DA; color: white; }
-        .ai .avatar { background-color: #10a37f; color: white; }
+  .panel {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .panel h2 {
+    font-size: 0.72rem;
+    color: #cfd6ff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
 
-        .message-text { flex: 1; line-height: 1.5; font-size: 0.95rem; word-break: break-word; white-space: pre-wrap; }
-        .message-text img { max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border-color); display: block; }
+  .color-toggle-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .color-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .color-toggle input { accent-color: #4fc8ff; width: 16px; height: 16px; cursor: pointer; }
+  .swatch {
+    width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0;
+  }
+  .color-toggle.excluded { opacity: 0.4; text-decoration: line-through; }
+  .color-toggle span.label { font-size: 0.82rem; }
 
-        .copy-btn {
-            background: transparent; border: none; color: #8e8ea0; cursor: pointer;
-            font-size: 0.8rem; margin-top: 10px; display: flex; align-items: center; gap: 5px;
-        }
+  .history-block { margin-top: 18px; }
+  .history-scroll {
+    max-height: 100px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .history-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    color: #9aa3c7;
+  }
+  .history-row .mini {
+    width: 14px; height: 14px; border-radius: 4px;
+  }
 
-        #input-area { padding: 15px 15%; background-color: var(--bg-main); }
-        .input-box {
-            background-color: var(--input-bg); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        textarea {
-            flex: 1; background: transparent; border: none; color: var(--text-main);
-            outline: none; font-size: 16px; resize: none; height: 24px; max-height: 150px;
-        }
-        .send-btn { background: #10a37f; color: white; border: none; border-radius: 6px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-
-        /* Stiluri optimizate pentru ecran de telefon */
-        @media (max-width: 768px) {
-            #sidebar { position: fixed; top: 0; left: 0; height: 100%; transform: translateX(-100%); }
-            #sidebar.open { transform: translateX(0); }
-            .message-row { padding: 15px; gap: 10px; }
-            #input-area { padding: 10px; }
-            .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
-            .overlay.open { display: block; }
-        }
-    </style>
+  .fade-hide {
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .logo-bar, .tagline, .possible-title, .pill-row, #rollBtn, .panel {
+    transition: opacity 0.2s ease;
+  }
+  body.rolling-bg {
+    background: #fff !important;
+    transition: background 0.15s ease;
+  }
+  body { transition: background 0.3s ease; }
+</style>
 </head>
 <body>
 
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<div class="logo-bar">
+  <span class="cube">🎲</span>
+  <span class="name">COSMIC-DICE</span>
+</div>
 
-    <div id="sidebar">
-        <button class="new-chat-btn" onclick="startNewChat()">
-            <i class="fa-solid fa-plus"></i> Chat nou
-        </button>
-        <div id="history-list"></div>
-        <div class="theme-toggle" onclick="toggleTheme()">
-            <i class="fa-solid fa-sun" id="theme-icon"></i> <span id="theme-text">Light mode</span>
-        </div>
-    </div>
+<div class="tagline">4 Colored Dice · Secure Random Rolls</div>
 
-    <div id="main-chat">
-        <header>
-            <i class="fa-solid fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
-            <span>AI Universal</span>
-            <div></div>
-        </header>
+<div class="possible-title">Possible Colors</div>
+<div class="pill-row" id="pillRow"></div>
 
-        <div id="messages-container">
-            <div class="message-row ai">
-                <div class="avatar">AI</div>
-                <div class="message-text">Salut! Aplicația este gata și optimizată pentru telefon, tabletă sau PC. Scrie orice întrebare sau cere poze bezpośred!</div>
-            </div>
-        </div>
+<div class="dice-row" id="diceRow"></div>
 
-        <div id="input-area">
-            <div class="input-box">
-                <textarea id="user-input" placeholder="Scrie un mesaj..." rows="1" onkeypress="handleKeyPress(event)" oninput="autoResize(this)"></textarea>
-                <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+<button id="rollBtn">Roll</button>
 
-    <script>
-        const container = document.getElementById('messages-container');
-        const userInput = document.getElementById('user-input');
-        const historyList = document.getElementById('history-list');
+<div class="panel">
+  <div class="panel-header">
+    <h2>Active Colors</h2>
+  </div>
+  <div class="color-toggle-list" id="colorList"></div>
 
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('open'); 
-            document.getElementById('overlay').classList.toggle('open'); 
-        }
+  <div class="history-block">
+    <h2>Last 50 Results</h2>
+    <div class="history-scroll" id="historyList"></div>
+  </div>
+</div>
 
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-            if(document.body.classList.contains('light-theme')) {
-                icon.className = "fa-solid fa-moon"; text.textContent = "Dark mode";
-            } else {
-                icon.className = "fa-solid fa-sun"; text.textContent = "Light mode";
-            }
-        }
+<script>
+const COLORS = [
+  { key: 'red',    label: 'Red',    hex: '#ff5555' },
+  { key: 'orange', label: 'Orange', hex: '#ffa447' },
+  { key: 'yellow', label: 'Yellow', hex: '#ffe45e' },
+  { key: 'green',  label: 'Green',  hex: '#5eff9c' },
+  { key: 'blue',   label: 'Blue',   hex: '#5ec8ff' },
+  { key: 'purple', label: 'Purple', hex: '#c07bff' },
+];
 
-        function autoResize(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
+let enabled = {};
+COLORS.forEach(c => enabled[c.key] = true);
+let history = [];
 
-        function handleKeyPress(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        }
+const diceRow = document.getElementById('diceRow');
+const colorList = document.getElementById('colorList');
+const historyList = document.getElementById('historyList');
+const pillRow = document.getElementById('pillRow');
+const rollBtn = document.getElementById('rollBtn');
 
-        function appendMessage(role, content) {
-            const row = document.createElement('div');
-            row.className = `message-row ${role}`;
-            
-            const avatar = document.createElement('div');
-            avatar.className = 'avatar';
-            avatar.textContent = role === 'user' ? 'U' : 'AI';
+function renderPills() {
+  pillRow.innerHTML = '';
+  COLORS.forEach(c => {
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.style.background = c.hex;
+    pill.textContent = c.label;
+    pillRow.appendChild(pill);
+  });
+}
 
-            const textDiv = document.createElement('div');
-            textDiv.className = 'message-text';
-            textDiv.innerHTML = content;
+function renderColorList() {
+  colorList.innerHTML = '';
+  COLORS.forEach(c => {
+    const row = document.createElement('label');
+    row.className = 'color-toggle' + (enabled[c.key] ? '' : ' excluded');
+    row.innerHTML = `
+      <input type="checkbox" ${enabled[c.key] ? 'checked' : ''} data-key="${c.key}">
+      <span class="swatch" style="background:${c.hex}"></span>
+      <span class="label">${c.label}</span>
+    `;
+    colorList.appendChild(row);
+  });
 
-            row.appendChild(avatar);
-            row.appendChild(textDiv);
+  colorList.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', e => {
+      const key = e.target.dataset.key;
+      const activeCount = Object.values(enabled).filter(Boolean).length;
+      if (!e.target.checked && activeCount <= 1) {
+        e.target.checked = true;
+        return;
+      }
+      enabled[key] = e.target.checked;
+      renderColorList();
+      renderPills();
+    });
+  });
+}
 
-            if(role === 'ai') {
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
-                copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(textDiv.innerText.replace('Copy', '').trim());
-                    copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
-                    setTimeout(() => copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`, 2000);
-                };
-                textDiv.appendChild(copyBtn);
-            }
+function initDice() {
+  diceRow.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const die = document.createElement('div');
+    die.className = 'die';
+    die.style.setProperty('--glow', '#333');
+    die.innerHTML = '<div class="dot" style="background:#444"></div>';
+    diceRow.appendChild(die);
+  }
+}
 
-            container.appendChild(row);
-            container.scrollTop = container.scrollHeight;
-            return textDiv;
-        }
+function randomActiveColor() {
+  const active = COLORS.filter(c => enabled[c.key]);
+  return active[Math.floor(Math.random() * active.length)];
+}
 
-        function isImageRequest(text) {
-            const lower = text.toLowerCase();
-            const keywords = ['imagine', 'poza', 'creeaza', 'creează', 'deseneaza', 'desenează', 'fă o poză', 'fa o poza', 'genereaza', 'generează', '/imagine'];
-            return keywords.some(kw => lower.includes(kw));
-        }
+function addHistory(results) {
+  history.unshift(results);
+  if (history.length > 50) history.pop();
+  renderHistory();
+}
 
-        function generateImage(prompt, aiBox) {
-            let cleanPrompt = prompt.toLowerCase()
-                .replace(/creeaza|creează|genereaza|generează|fa|fă|o|poza|poză|imagine|cu|deseneaza|desenează|\/imagine/g, '')
-                .trim();
+function renderHistory() {
+  historyList.innerHTML = '';
+  if (history.length === 0) {
+    historyList.innerHTML = '<div class="history-row">No results yet</div>';
+    return;
+  }
+  history.forEach(res => {
+    const row = document.createElement('div');
+    row.className = 'history-row';
+    row.innerHTML = res.map(c => `<span class="mini" style="background:${c.hex}"></span>`).join('');
+    historyList.appendChild(row);
+  });
+}
 
-            if (!cleanPrompt) cleanPrompt = prompt;
+function roll() {
+  rollBtn.disabled = true;
+  document.body.classList.add('rolling-bg');
+  document.querySelectorAll('.logo-bar, .tagline, .possible-title, .pill-row, .panel')
+    .forEach(el => el.classList.add('fade-hide'));
+  rollBtn.classList.add('fade-hide');
+  const dice = diceRow.querySelectorAll('.die');
 
-            const enhancedPrompt = `${cleanPrompt}, stunning photorealistic, high detail, 8k resolution, cinematic lighting`;
-            const seed = Math.floor(Math.random() * 1000000);
-            const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1024&height=1024&model=flux&nologo=true&seed=${seed}`;
+  dice.forEach(d => {
+    d.classList.add('rolling');
+    d.style.setProperty('--glow', '#fff');
+    d.style.background = '#1a1a1a';
+    d.style.borderColor = '#fff';
+    d.querySelector('.dot').style.background = '#fff';
+  });
 
-            aiBox.innerHTML = `Am generat imaginea:<br><img src="${imgUrl}" alt="${cleanPrompt}">`;
-        }
+  let ticks = 0;
+  const maxTicks = 12;
+  const interval = setInterval(() => {
+    ticks++;
+    if (ticks >= maxTicks) {
+      clearInterval(interval);
+      const finalResults = [];
+      dice.forEach(d => {
+        const c = randomActiveColor();
+        finalResults.push(c);
+        d.classList.remove('rolling');
+        d.style.setProperty('--glow', c.hex);
+        d.style.background = c.hex + '33';
+        d.style.borderColor = c.hex;
+        d.querySelector('.dot').style.background = '#fff';
+        d.title = c.label;
+      });
+      addHistory(finalResults);
+      rollBtn.disabled = false;
+      document.body.classList.remove('rolling-bg');
+      document.querySelectorAll('.logo-bar, .tagline, .possible-title, .pill-row, .panel')
+        .forEach(el => el.classList.remove('fade-hide'));
+      rollBtn.classList.remove('fade-hide');
+    }
+  }, 70);
+}
 
-        async function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
+initDice();
+renderPills();
+renderColorList();
+renderHistory();
+rollBtn.addEventListener('click', roll);
+</script>
 
-            addHistoryItem(text);
-            appendMessage('user', text);
-            userInput.value = '';
-            userInput.style.height = 'auto';
-
-            const aiBox = appendMessage('ai', 'Se procesează...');
-
-            if (isImageRequest(text)) {
-                generateImage(text, aiBox);
-                return;
-            }
-
-            try {
-                const promptInstruct = "Răspunde direct și scurt, fără să pui întrebări de confirmare. Utilizatorul a întrebat: " + text;
-                const response = await puter.ai.chat(promptInstruct);
-                const fullText = typeof response === 'object' ? response.toString() : response;
-                typeWriterEffect(aiBox, fullText);
-            } catch (err) {
-                aiBox.textContent = "Reîncearcă trimiterea mesajului!";
-            }
-        }
-
-        function typeWriterEffect(element, text) {
-            element.innerHTML = "";
-            let i = 0;
-            const timer = setInterval(() => {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    container.scrollTop = container.scrollHeight;
-                } else {
-                    clearInterval(timer);
-                }
-            }, 2);
-        }
-
-        function addHistoryItem(text) {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `<i class="fa-regular fa-message"></i> ${text}`;
-            historyList.prepend(item);
-        }
-
-        function startNewChat() {
-            container.innerHTML = `
-                <div class="message-row ai">
-                    <div class="avatar">AI</div>
-                    <div class="message-text">Chat nou! Cu ce te ajut acum?</div>
-                </div>
-            `;
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('open');
-                document.getElementById('overlay').classList.remove('open');
-            }
-        }
-    </script>
 </body>
 </html>
