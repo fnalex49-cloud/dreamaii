@@ -1,408 +1,416 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
-<meta charset="UTF-8">
-<title>Cosmic Dice</title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background:
-      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.5), transparent),
-      radial-gradient(2px 2px at 70% 15%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,0.3), transparent),
-      radial-gradient(1.5px 1.5px at 85% 60%, rgba(255,255,255,0.4), transparent),
-      radial-gradient(circle at 50% 0%, #1a1f3a, #05060f 70%);
-    font-family: 'Segoe UI', sans-serif;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 14px 50px;
-  }
-
-  .logo-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 30px;
-    padding: 8px 20px;
-    margin-bottom: 6px;
-    background: rgba(255,255,255,0.03);
-  }
-  .logo-bar .cube { font-size: 1.2rem; }
-  .logo-bar .name {
-    font-weight: 800;
-    letter-spacing: 1px;
-    font-size: 1rem;
-    background: linear-gradient(90deg,#ff5e5e,#ffb347,#ffe45e,#6effa1,#5ec8ff,#c07bff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .counter {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #e8ecff;
-    margin: 10px 0 2px;
-  }
-
-  .tagline {
-    color: #9aa3c7;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 18px;
-  }
-
-  .possible-title {
-    font-size: 0.7rem;
-    color: #8a92b8;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .pill-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 26px;
-  }
-  .pill {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: #05060f;
-  }
-
-  .dice-row {
-    display: flex;
-    gap: 14px;
-    margin: 6px 0 26px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .die {
-    width: 78px;
-    height: 78px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 22px 2px var(--glow, #333);
-    border: 2px solid rgba(255,255,255,0.5);
-    background: #111;
-    transition: transform .15s ease;
-  }
-  .die.rolling { animation: spin 0.08s linear infinite; }
-  @keyframes spin {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(12deg) scale(1.04); }
-    100% { transform: rotate(-12deg) scale(0.96); }
-  }
-  .die .dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.9);
-  }
-
-  .id-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #f4d94a;
-    color: #1a1a1a;
-    font-weight: 700;
-    font-size: 0.75rem;
-    border-radius: 8px;
-    padding: 8px 18px;
-    margin-bottom: 14px;
-  }
-  .id-bar .verify {
-    border-left: 1px solid rgba(0,0,0,0.3);
-    padding-left: 10px;
-    letter-spacing: 1px;
-  }
-
-  button#rollBtn {
-    background: linear-gradient(90deg,#4fc8ff,#7ee2ff);
-    border: none;
-    color: #012;
-    font-weight: 800;
-    letter-spacing: 2px;
-    padding: 14px 60px;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(79,200,255,0.6);
-    transition: transform .1s ease;
-    text-transform: uppercase;
-  }
-  button#rollBtn:active { transform: scale(0.96); }
-  button#rollBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .panel {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 420px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px;
-    padding: 14px;
-  }
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .panel h2 {
-    font-size: 0.72rem;
-    color: #cfd6ff;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-
-  .color-toggle-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
-  .color-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 20px;
-    padding: 6px 14px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .color-toggle input { accent-color: #4fc8ff; width: 16px; height: 16px; cursor: pointer; }
-  .swatch {
-    width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0;
-  }
-  .color-toggle.excluded { opacity: 0.4; text-decoration: line-through; }
-  .color-toggle span.label { font-size: 0.82rem; }
-
-  .history-block { margin-top: 18px; }
-  .history-scroll {
-    max-height: 100px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
-  .history-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.68rem;
-    color: #9aa3c7;
-  }
-  .history-row .mini {
-    width: 14px; height: 14px; border-radius: 4px;
-  }
-
-  .fade-hide {
-    opacity: 0 !important;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-  }
-  .logo-bar, .tagline, .possible-title, .pill-row, #rollBtn, .panel {
-    transition: opacity 0.2s ease;
-  }
-  body.rolling-bg {
-    background: #fff !important;
-    transition: background 0.15s ease;
-  }
-  body { transition: background 0.3s ease; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstreAi - Roblox 3D Model & Script Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
+        .bg-card { background-color: #161b22; }
+        .border-custom { border-color: #30363d; }
+        .active-tab { border-bottom: 2px solid #58a6ff; color: #58a6ff; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+    </style>
 </head>
-<body>
+<body class="h-screen flex flex-col overflow-hidden">
 
-<div class="logo-bar">
-  <span class="cube">🎲</span>
-  <span class="name">COSMIC-DICE</span>
-</div>
+    <!-- HEADER -->
+    <header class="bg-card border-b border-custom px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="bg-gradient-to-tr from-orange-500 to-amber-300 p-2 rounded-lg text-black font-bold">
+                    <i data-lucide="box" class="w-5 h-5"></i>
+                </div>
+                <span class="text-xl font-bold tracking-wide text-white">AstreAi</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-4 text-sm text-gray-400">
+                <a href="#" class="hover:text-white transition">Explore</a>
+                <a href="#" class="hover:text-white transition">Community</a>
+                <a href="#" class="hover:text-white transition">Pricing</a>
+            </nav>
+        </div>
 
-<div class="tagline">4 Colored Dice · Secure Random Rolls</div>
+        <div class="flex items-center gap-4">
+            <div id="credits-badge" class="bg-gray-800 border border-custom px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 text-amber-400">
+                <i data-lucide="zap" class="w-4 h-4 fill-amber-400"></i>
+                <span id="credits-count">50 credits</span>
+            </div>
+            <button onclick="openModal('buy-modal')" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-amber-500/20 transition">
+                Upgrade
+            </button>
+            <div id="user-btn" onclick="openAuthOrProfile()" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold cursor-pointer text-sm">
+                A
+            </div>
+        </div>
+    </header>
 
-<div class="possible-title">Possible Colors</div>
-<div class="pill-row" id="pillRow"></div>
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- LEFT PANEL: PROMPT & SPECS -->
+        <div class="w-full md:w-[420px] bg-card border-r border-custom flex flex-col p-4 overflow-y-auto gap-4">
+            
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2">Prompt Model 3D</label>
+                <textarea id="prompt-input" rows="5" class="w-full bg-[#0d1117] border border-custom rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500 transition resize-none" placeholder="Descrie ce vrei să creezi... (ex: Create a cute 3D tiger character in Roblox style...)"></textarea>
+            </div>
 
-<div class="dice-row" id="diceRow"></div>
+            <!-- Quick Suggestions -->
+            <div class="flex flex-wrap gap-1.5">
+                <button onclick="setPrompt('Cute 3D tiger character, blocky low-poly, orange with black stripes, Roblox style')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🐯 Tiger Pet</button>
+                <button onclick="setPrompt('Stylized 3D treasure chest with gold coins, blocky Roblox style')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🪙 Treasure Chest</button>
+                <button onclick="setPrompt('Sci-fi futuristic laser turret with neon lights')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🔫 Laser Turret</button>
+            </div>
 
-<button id="rollBtn">Roll</button>
+            <!-- Detail Levels -->
+            <div>
+                <label class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2">Nivel de Detaliu</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <div onclick="selectTier('QUICK', 10, this)" class="tier-card bg-[#0d1117] border border-custom p-2.5 rounded-lg cursor-pointer hover:border-gray-500 text-center">
+                        <div class="text-xs font-bold text-white">QUICK</div>
+                        <div class="text-[10px] text-amber-400 font-semibold">10 CREDITE</div>
+                        <div class="text-[10px] text-gray-400 mt-1">~20 părți</div>
+                    </div>
+                    <div onclick="selectTier('STANDARD', 30, this)" class="tier-card bg-[#0d1117] border-2 border-blue-500 p-2.5 rounded-lg cursor-pointer text-center">
+                        <div class="text-xs font-bold text-white">STANDARD</div>
+                        <div class="text-[10px] text-amber-400 font-semibold">30 CREDITE</div>
+                        <div class="text-[10px] text-gray-400 mt-1">~40 părți</div>
+                    </div>
+                    <div onclick="selectTier('DETAILED', 60, this)" class="tier-card bg-[#0d1117] border border-custom p-2.5 rounded-lg cursor-pointer hover:border-gray-500 text-center">
+                        <div class="text-xs font-bold text-white">DETAILED</div>
+                        <div class="text-[10px] text-amber-400 font-semibold">60 CREDITE</div>
+                        <div class="text-[10px] text-gray-400 mt-1">~80 părți</div>
+                    </div>
+                </div>
+            </div>
 
-<div class="panel">
-  <div class="panel-header">
-    <h2>Active Colors</h2>
-  </div>
-  <div class="color-toggle-list" id="colorList"></div>
+            <!-- Generate Button -->
+            <button onclick="handleGenerate()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition">
+                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                GENERATE ROBLOX ASSET
+            </button>
+        </div>
 
-  <div class="history-block">
-    <h2>Last 50 Results</h2>
-    <div class="history-scroll" id="historyList"></div>
-  </div>
-</div>
+        <!-- RIGHT PANEL: VIEWPORT & SCRIPT -->
+        <div class="flex-1 flex flex-col bg-[#0d1117] relative">
+            
+            <!-- Viewport Header Tabs -->
+            <div class="bg-card border-b border-custom px-4 flex items-center justify-between">
+                <div class="flex gap-4">
+                    <button id="tab-preview-btn" onclick="switchTab('preview')" class="py-3 text-sm font-semibold active-tab flex items-center gap-2">
+                        <i data-lucide="eye" class="w-4 h-4"></i> PREVIEW 3D
+                    </button>
+                    <button id="tab-script-btn" onclick="switchTab('script')" class="py-3 text-sm font-semibold text-gray-400 hover:text-white flex items-center gap-2">
+                        <i data-lucide="code" class="w-4 h-4"></i> SCRIPT (LUAU)
+                    </button>
+                </div>
 
-<script>
-const COLORS = [
-  { key: 'red',    label: 'Red',    hex: '#ff5555' },
-  { key: 'orange', label: 'Orange', hex: '#ffa447' },
-  { key: 'yellow', label: 'Yellow', hex: '#ffe45e' },
-  { key: 'green',  label: 'Green',  hex: '#5eff9c' },
-  { key: 'blue',   label: 'Blue',   hex: '#5ec8ff' },
-  { key: 'purple', label: 'Purple', hex: '#c07bff' },
-];
+                <div class="flex items-center gap-2">
+                    <button onclick="downloadLuaScript()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-1.5 rounded border border-custom flex items-center gap-1.5 text-gray-200">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Descarcă .LUA
+                    </button>
+                    <button onclick="downloadObjModel()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-1.5 rounded border border-custom flex items-center gap-1.5 text-gray-200">
+                        <i data-lucide="box" class="w-3.5 h-3.5"></i> Descarcă .OBJ
+                    </button>
+                </div>
+            </div>
 
-let enabled = {};
-COLORS.forEach(c => enabled[c.key] = true);
-let history = [];
+            <!-- VIEWPORT 3D CANVAS -->
+            <div id="view-preview" class="flex-1 relative w-full h-full">
+                <div id="canvas-container" class="w-full h-full"></div>
+                <div class="absolute bottom-4 left-4 bg-card/80 backdrop-blur border border-custom px-3 py-1.5 rounded text-xs text-gray-300">
+                    <span id="model-stats">39 parts • 12.4 x 20.4 x 12.2 studs</span>
+                </div>
+            </div>
 
-const diceRow = document.getElementById('diceRow');
-const colorList = document.getElementById('colorList');
-const historyList = document.getElementById('historyList');
-const pillRow = document.getElementById('pillRow');
-const rollBtn = document.getElementById('rollBtn');
+            <!-- SCRIPT VIEW -->
+            <div id="view-script" class="flex-1 hidden p-4 bg-[#0d1117] overflow-auto">
+                <pre><code id="script-code" class="text-xs text-green-400 font-mono leading-relaxed">-- Se generează scriptul Roblox Luau...</code></pre>
+            </div>
+        </div>
+    </div>
 
-function renderPills() {
-  pillRow.innerHTML = '';
-  COLORS.forEach(c => {
-    const pill = document.createElement('div');
-    pill.className = 'pill';
-    pill.style.background = c.hex;
-    pill.textContent = c.label;
-    pillRow.appendChild(pill);
-  });
-}
+    <!-- MODAL AUTH -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-card border border-custom w-full max-w-md rounded-xl p-6 relative">
+            <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            <h3 class="text-xl font-bold text-white mb-1">Conectează-te la AstreAi</h3>
+            <p class="text-xs text-gray-400 mb-4">Creează un cont pentru a primi 100 de credite gratuite!</p>
 
-function renderColorList() {
-  colorList.innerHTML = '';
-  COLORS.forEach(c => {
-    const row = document.createElement('label');
-    row.className = 'color-toggle' + (enabled[c.key] ? '' : ' excluded');
-    row.innerHTML = `
-      <input type="checkbox" ${enabled[c.key] ? 'checked' : ''} data-key="${c.key}">
-      <span class="swatch" style="background:${c.hex}"></span>
-      <span class="label">${c.label}</span>
-    `;
-    colorList.appendChild(row);
-  });
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
+                <input type="text" placeholder="Nume utilizator" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
+                <input type="email" placeholder="Email" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
+                <input type="password" placeholder="Parolă" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-2.5 rounded text-sm text-white transition">Autentificare / Înregistrare</button>
+            </form>
+        </div>
+    </div>
 
-  colorList.querySelectorAll('input').forEach(input => {
-    input.addEventListener('change', e => {
-      const key = e.target.dataset.key;
-      const activeCount = Object.values(enabled).filter(Boolean).length;
-      if (!e.target.checked && activeCount <= 1) {
-        e.target.checked = true;
-        return;
-      }
-      enabled[key] = e.target.checked;
-      renderColorList();
-      renderPills();
-    });
-  });
-}
+    <!-- MODAL BUY CREDITS -->
+    <div id="buy-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-card border border-custom w-full max-w-md rounded-xl p-6 relative">
+            <button onclick="closeModal('buy-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            <h3 class="text-xl font-bold text-white mb-1">Cumpără Credite AstreAi</h3>
+            <p class="text-xs text-gray-400 mb-4">Alege pachetul potrivit pentru proiectele tale Roblox.</p>
 
-function initDice() {
-  diceRow.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const die = document.createElement('div');
-    die.className = 'die';
-    die.style.setProperty('--glow', '#333');
-    die.innerHTML = '<div class="dot" style="background:#444"></div>';
-    diceRow.appendChild(die);
-  }
-}
+            <div class="space-y-3">
+                <div class="border border-custom p-3 rounded-lg flex justify-between items-center bg-[#0d1117]">
+                    <div>
+                        <div class="font-bold text-white text-sm">100 Credite</div>
+                        <div class="text-xs text-gray-400">Aproximativ 3 modele Standard</div>
+                    </div>
+                    <button onclick="buyCredits(100)" class="bg-amber-500 text-black font-bold px-3 py-1.5 rounded text-xs hover:bg-amber-400">5.00$</button>
+                </div>
+                <div class="border border-amber-500/50 p-3 rounded-lg flex justify-between items-center bg-[#0d1117]">
+                    <div>
+                        <div class="font-bold text-white text-sm">300 Credite</div>
+                        <div class="text-xs text-amber-400 font-semibold">Cel mai popular</div>
+                    </div>
+                    <button onclick="buyCredits(300)" class="bg-amber-500 text-black font-bold px-3 py-1.5 rounded text-xs hover:bg-amber-400">12.00$</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-function randomActiveColor() {
-  const active = COLORS.filter(c => enabled[c.key]);
-  return active[Math.floor(Math.random() * active.length)];
-}
+    <!-- JAVASCRIPT APP LOGIC & THREE.JS RENDERER -->
+    <script>
+        let credits = 50;
+        let isLoggedIn = true;
+        let currentTierCost = 30;
+        let scene, camera, renderer, currentMeshGroup;
 
-function addHistory(results) {
-  history.unshift(results);
-  if (history.length > 50) history.pop();
-  renderHistory();
-}
+        // Initialize Icons
+        lucide.createIcons();
 
-function renderHistory() {
-  historyList.innerHTML = '';
-  if (history.length === 0) {
-    historyList.innerHTML = '<div class="history-row">No results yet</div>';
-    return;
-  }
-  history.forEach(res => {
-    const row = document.createElement('div');
-    row.className = 'history-row';
-    row.innerHTML = res.map(c => `<span class="mini" style="background:${c.hex}"></span>`).join('');
-    historyList.appendChild(row);
-  });
-}
+        // Three.js Setup
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d1117);
 
-function roll() {
-  rollBtn.disabled = true;
-  document.body.classList.add('rolling-bg');
-  document.querySelectorAll('.logo-bar, .tagline, .possible-title, .pill-row, .panel')
-    .forEach(el => el.classList.add('fade-hide'));
-  rollBtn.classList.add('fade-hide');
-  const dice = diceRow.querySelectorAll('.die');
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(20, 15, 25);
 
-  dice.forEach(d => {
-    d.classList.add('rolling');
-    d.style.setProperty('--glow', '#fff');
-    d.style.background = '#1a1a1a';
-    d.style.borderColor = '#fff';
-    d.querySelector('.dot').style.background = '#fff';
-  });
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
 
-  let ticks = 0;
-  const maxTicks = 12;
-  const interval = setInterval(() => {
-    ticks++;
-    if (ticks >= maxTicks) {
-      clearInterval(interval);
-      const finalResults = [];
-      dice.forEach(d => {
-        const c = randomActiveColor();
-        finalResults.push(c);
-        d.classList.remove('rolling');
-        d.style.setProperty('--glow', c.hex);
-        d.style.background = c.hex + '33';
-        d.style.borderColor = c.hex;
-        d.querySelector('.dot').style.background = '#fff';
-        d.title = c.label;
-      });
-      addHistory(finalResults);
-      rollBtn.disabled = false;
-      document.body.classList.remove('rolling-bg');
-      document.querySelectorAll('.logo-bar, .tagline, .possible-title, .pill-row, .panel')
-        .forEach(el => el.classList.remove('fade-hide'));
-      rollBtn.classList.remove('fade-hide');
-    }
-  }, 70);
-}
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
 
-initDice();
-renderPills();
-renderColorList();
-renderHistory();
-rollBtn.addEventListener('click', roll);
-</script>
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
 
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 20, 15);
+            scene.add(dirLight);
+
+            // Grid Floor
+            const grid = new THREE.GridHelper(40, 20, 0x30363d, 0x161b22);
+            grid.position.y = -5;
+            scene.add(grid);
+
+            // Initial Tiger Load
+            generateTiger3D();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // Generate Blocky Roblox Tiger Model
+        function generateTiger3D() {
+            if (currentMeshGroup) scene.remove(currentMeshGroup);
+            currentMeshGroup = new THREE.Group();
+
+            const orangeMat = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.3 });
+            const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+            const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2 });
+            const pinkMat = new THREE.MeshStandardMaterial({ color: 0xffb6c1, roughness: 0.4 });
+
+            // Body
+            const body = new THREE.Mesh(new THREE.BoxGeometry(6, 5, 8), orangeMat);
+            body.position.set(0, 0, 0);
+            currentMeshGroup.add(body);
+
+            // White Belly
+            const belly = new THREE.Mesh(new THREE.BoxGeometry(6.1, 2, 8.1), whiteMat);
+            belly.position.set(0, -1.5, 0);
+            currentMeshGroup.add(belly);
+
+            // Head
+            const head = new THREE.Mesh(new THREE.BoxGeometry(5.5, 5, 5), orangeMat);
+            head.position.set(0, 4, 3.5);
+            currentMeshGroup.add(head);
+
+            // Snout / Muzzle
+            const snout = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 2), whiteMat);
+            snout.position.set(0, 3, 6);
+            currentMeshGroup.add(snout);
+
+            // Nose
+            const nose = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.5), blackMat);
+            nose.position.set(0, 3.5, 6.8);
+            currentMeshGroup.add(nose);
+
+            // Eyes
+            const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 0.2), blackMat);
+            eyeL.position.set(-1.6, 4.5, 6.1);
+            const eyeR = eyeL.clone();
+            eyeR.position.x = 1.6;
+            currentMeshGroup.add(eyeL, eyeR);
+
+            // Ears
+            const earL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1), orangeMat);
+            earL.position.set(-2, 7, 3.5);
+            const earInnerL = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.2), pinkMat);
+            earInnerL.position.set(-2, 7, 4);
+            currentMeshGroup.add(earL, earInnerL);
+
+            const earR = earL.clone(); earR.position.x = 2;
+            const earInnerR = earInnerL.clone(); earInnerR.position.x = 2;
+            currentMeshGroup.add(earR, earInnerR);
+
+            // Legs
+            const legPositions = [[-2.2, -4.5, 2.5], [2.2, -4.5, 2.5], [-2.2, -4.5, -2.5], [2.2, -4.5, -2.5]];
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4, 1.8), orangeMat);
+                leg.position.set(...pos);
+                const paw = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2), whiteMat);
+                paw.position.set(pos[0], -6, pos[2]);
+                currentMeshGroup.add(leg, paw);
+            });
+
+            // Tail
+            const tail = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 4), orangeMat);
+            tail.position.set(0, 1, -5.5);
+            tail.rotation.x = 0.3;
+            currentMeshGroup.add(tail);
+
+            scene.add(currentMeshGroup);
+            updateScriptView();
+        }
+
+        function updateScriptView() {
+            document.getElementById('script-code').innerText = 
+`-- Generated by AstreAi
+local model = Instance.new("Model")
+model.Name = "CuteTigerPet"
+
+local function createPart(name, size, cframe, color, material)
+    local part = Instance.new("Part")
+    part.Name = name
+    part.Size = size
+    part.CFrame = cframe
+    part.BrickColor = BrickColor.new(color)
+    part.Material = material or Enum.Material.Plastic
+    part.Parent = model
+    return part
+end
+
+-- Body & Head
+createPart("Body", Vector3.new(6, 5, 8), CFrame.new(0, 5, 0), "Bright orange")
+createPart("Belly", Vector3.new(6.1, 2, 8.1), CFrame.new(0, 3.5, 0), "White")
+createPart("Head", Vector3.new(5.5, 5, 5), CFrame.new(0, 9, 3.5), "Bright orange")
+
+model.Parent = workspace`;
+        }
+
+        // Interacțiuni Interfață
+        function setPrompt(text) {
+            document.getElementById('prompt-input').value = text;
+        }
+
+        function selectTier(tier, cost, el) {
+            currentTierCost = cost;
+            document.querySelectorAll('.tier-card').forEach(c => {
+                c.classList.remove('border-blue-500', 'border-2');
+                c.classList.add('border-custom');
+            });
+            el.classList.add('border-blue-500', 'border-2');
+        }
+
+        function handleGenerate() {
+            if (!isLoggedIn) {
+                openModal('auth-modal');
+                return;
+            }
+
+            if (credits < currentTierCost) {
+                openModal('buy-modal');
+                return;
+            }
+
+            credits -= currentTierCost;
+            document.getElementById('credits-count').innerText = `${credits} credits`;
+            generateTiger3D();
+        }
+
+        function switchTab(tab) {
+            if (tab === 'preview') {
+                document.getElementById('view-preview').classList.remove('hidden');
+                document.getElementById('view-script').classList.add('hidden');
+                document.getElementById('tab-preview-btn').classList.add('active-tab');
+                document.getElementById('tab-script-btn').classList.remove('active-tab');
+            } else {
+                document.getElementById('view-preview').classList.add('hidden');
+                document.getElementById('view-script').classList.remove('hidden');
+                document.getElementById('tab-script-btn').classList.add('active-tab');
+                document.getElementById('tab-preview-btn').classList.remove('active-tab');
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            isLoggedIn = true;
+            credits += 100;
+            document.getElementById('credits-count').innerText = `${credits} credits`;
+            closeModal('auth-modal');
+        }
+
+        function buyCredits(amount) {
+            credits += amount;
+            document.getElementById('credits-count').innerText = `${credits} credits`;
+            closeModal('buy-modal');
+        }
+
+        function downloadLuaScript() {
+            const code = document.getElementById('script-code').innerText;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'AstreAi_RobloxModel.lua';
+            a.click();
+        }
+
+        function downloadObjModel() {
+            alert('Modelul 3D (.OBJ) se descarcă...');
+        }
+
+        // Window Init
+        window.onload = init3D;
+    </script>
 </body>
 </html>
