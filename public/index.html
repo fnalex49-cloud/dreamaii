@@ -3,202 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstreAi - Roblox 3D Model & Script Generator</title>
-    <!-- Tailwind CSS CDN -->
+    <title>AstreAi — Roblox 3D Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background-color: #0d1117; color: #c9d1d9; font-family: system-ui, -apple-system, sans-serif; }
-        .bg-card { background-color: #161b22; }
-        .border-custom { border-color: #30363d; }
-        .active-tab { border-bottom: 2px solid #58a6ff; color: #58a6ff; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        body { background-color: #f4f5f0; color: #1c1e21; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+        .bg-panel { background-color: #ffffff; border: 1px solid #e1e3da; }
+        .btn-orange { background-color: #ff5722; color: white; }
+        .btn-orange:hover { background-color: #f4511e; }
+        .tag-pill { background-color: #e8eae1; color: #555; }
+        .active-tab { background-color: #ffffff; border: 1px solid #d1d5db; border-bottom: none; font-weight: bold; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex flex-col overflow-hidden text-xs">
 
-    <!-- HEADER -->
-    <header class="bg-card border-b border-custom px-6 py-3 flex items-center justify-between">
+    <!-- BARA PORTOCALIE DE SUS -->
+    <div class="bg-[#ff5722] text-white px-4 py-1.5 flex items-center justify-between font-semibold">
+        <div class="flex-1 text-center">
+            🚀 It's launch day — AstreAi is live. <a href="#" class="underline ml-1">Build your first model free</a>
+        </div>
+        <button onclick="this.parentElement.style.display='none'" class="text-white/80 hover:text-white font-bold">✕</button>
+    </div>
+
+    <!-- HEADER / NAVIGARE -->
+    <header class="bg-white border-b border-[#e1e3da] px-6 py-2.5 flex items-center justify-between">
         <div class="flex items-center gap-6">
-            <div class="flex items-center gap-2">
-                <div class="bg-gradient-to-tr from-orange-500 to-amber-300 p-2 rounded-lg text-black font-bold">
-                    <i data-lucide="box" class="w-5 h-5"></i>
-                </div>
-                <span class="text-xl font-bold tracking-wide text-white">AstreAi</span>
-            </div>
-            <nav class="hidden md:flex items-center gap-4 text-sm text-gray-400">
-                <a href="#" class="hover:text-white transition">Explore</a>
-                <a href="#" class="hover:text-white transition">Community</a>
-                <a href="#" class="hover:text-white transition">Pricing</a>
+            <span class="text-lg font-black tracking-tight text-gray-900">AstreAi</span>
+            <nav class="hidden md:flex gap-4 text-gray-600 font-medium">
+                <a href="#" class="hover:text-black">Explore</a>
+                <a href="#" class="hover:text-black">Community</a>
+                <a href="#" class="hover:text-black">Pricing</a>
             </nav>
         </div>
-
-        <div class="flex items-center gap-4">
-            <div id="credits-badge" class="bg-gray-800 border border-custom px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 text-amber-400">
-                <i data-lucide="zap" class="w-4 h-4 fill-amber-400"></i>
-                <span id="credits-count">50 credits</span>
-            </div>
-            <button onclick="openModal('buy-modal')" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-amber-500/20 transition">
-                Upgrade
-            </button>
-            <div id="user-btn" onclick="openAuthOrProfile()" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold cursor-pointer text-sm">
-                A
-            </div>
+        <div class="flex items-center gap-3">
+            <button class="bg-[#ff5722] text-white font-bold px-3 py-1 rounded">Studio</button>
+            <span id="credits-badge" class="border border-red-300 bg-red-50 text-red-600 px-2.5 py-1 rounded-full font-bold">0 credits</span>
+            <button onclick="alert('Se deschide opțiunea de upgrade!')" class="border border-gray-300 px-3 py-1 rounded font-semibold hover:bg-gray-50">Upgrade</button>
+            <div class="w-7 h-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">A</div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT AREA -->
-    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-        
-        <!-- LEFT PANEL: PROMPT & SPECS -->
-        <div class="w-full md:w-[420px] bg-card border-r border-custom flex flex-col p-4 overflow-y-auto gap-4">
-            
+    <!-- CONTINUT PRINCIPAL -->
+    <div class="flex-1 flex flex-col md:flex-row p-4 gap-4 overflow-hidden">
+
+        <!-- STÂNGA: BRIEF & OPTIUNI -->
+        <div class="w-full md:w-[420px] bg-panel rounded-lg p-4 flex flex-col gap-3 overflow-y-auto shadow-sm">
+            <div class="font-bold text-gray-500 uppercase tracking-wider text-[10px]">Brief</div>
+
             <div>
-                <label class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2">Prompt Model 3D</label>
-                <textarea id="prompt-input" rows="5" class="w-full bg-[#0d1117] border border-custom rounded-lg p-3 text-sm text-white focus:outline-none focus:border-blue-500 transition resize-none" placeholder="Descrie ce vrei să creezi... (ex: Create a cute 3D tiger character in Roblox style...)"></textarea>
+                <label class="font-bold text-gray-700 uppercase block mb-1">What you're building</label>
+                <textarea id="prompt-input" rows="4" class="w-full bg-white border border-gray-300 rounded p-2 text-gray-800 focus:outline-none focus:border-orange-500 transition" placeholder="Create a stylized 3D lava egg..."></textarea>
             </div>
 
-            <!-- Quick Suggestions -->
+            <!-- Suggestion Pills -->
             <div class="flex flex-wrap gap-1.5">
-                <button onclick="setPrompt('Cute 3D tiger character, blocky low-poly, orange with black stripes, Roblox style')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🐯 Tiger Pet</button>
-                <button onclick="setPrompt('Stylized 3D treasure chest with gold coins, blocky Roblox style')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🪙 Treasure Chest</button>
-                <button onclick="setPrompt('Sci-fi futuristic laser turret with neon lights')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs px-2.5 py-1 rounded-full border border-custom transition">🔫 Laser Turret</button>
+                <button onclick="setPrompt('Cute 3D tiger character, blocky low-poly, orange with black stripes')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Tiger character</button>
+                <button onclick="setPrompt('Treasure chest with gold coins')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Treasure chest</button>
+                <button onclick="setPrompt('Vending machine')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Vending machine</button>
             </div>
 
             <!-- Detail Levels -->
             <div>
-                <label class="text-xs font-bold uppercase tracking-wider text-gray-400 block mb-2">Nivel de Detaliu</label>
+                <label class="font-bold text-gray-700 uppercase block mb-1">Detail</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <div onclick="selectTier('QUICK', 10, this)" class="tier-card bg-[#0d1117] border border-custom p-2.5 rounded-lg cursor-pointer hover:border-gray-500 text-center">
-                        <div class="text-xs font-bold text-white">QUICK</div>
-                        <div class="text-[10px] text-amber-400 font-semibold">10 CREDITE</div>
-                        <div class="text-[10px] text-gray-400 mt-1">~20 părți</div>
+                    <div class="border border-gray-200 bg-gray-50 p-2 rounded text-gray-400">
+                        <div class="font-bold">QUICK <span class="text-[9px]">10</span></div>
+                        <div class="text-[9px] font-semibold mt-1">~20 PARTS</div>
                     </div>
-                    <div onclick="selectTier('STANDARD', 30, this)" class="tier-card bg-[#0d1117] border-2 border-blue-500 p-2.5 rounded-lg cursor-pointer text-center">
-                        <div class="text-xs font-bold text-white">STANDARD</div>
-                        <div class="text-[10px] text-amber-400 font-semibold">30 CREDITE</div>
-                        <div class="text-[10px] text-gray-400 mt-1">~40 părți</div>
+                    <div class="border-2 border-orange-400 bg-orange-50/20 p-2 rounded text-orange-900">
+                        <div class="font-bold">STANDARD <span class="text-[9px]">30</span></div>
+                        <div class="text-[9px] font-semibold mt-1">~40 PARTS</div>
                     </div>
-                    <div onclick="selectTier('DETAILED', 60, this)" class="tier-card bg-[#0d1117] border border-custom p-2.5 rounded-lg cursor-pointer hover:border-gray-500 text-center">
-                        <div class="text-xs font-bold text-white">DETAILED</div>
-                        <div class="text-[10px] text-amber-400 font-semibold">60 CREDITE</div>
-                        <div class="text-[10px] text-gray-400 mt-1">~80 părți</div>
+                    <div class="border border-gray-200 bg-gray-50 p-2 rounded text-gray-400">
+                        <div class="font-bold">DETAILED <span class="text-[9px]">60</span></div>
+                        <div class="text-[9px] font-semibold mt-1">~80 PARTS</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Generate Button -->
-            <button onclick="handleGenerate()" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition">
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
-                GENERATE ROBLOX ASSET
-            </button>
+            <!-- Treatment -->
+            <div>
+                <label class="font-bold text-gray-700 uppercase block mb-1">Treatment</label>
+                <select class="w-full bg-white border border-gray-300 p-2 rounded text-gray-700 font-medium">
+                    <option>Retro Roblox — whole-stud bricks, classic BrickColors</option>
+                    <option>Smooth Plastic — modern studio style</option>
+                </select>
+            </div>
+
+            <!-- Notice Box -->
+            <div class="border border-orange-300 bg-orange-50 p-3 rounded-lg flex flex-col gap-2 mt-auto">
+                <div class="font-bold text-orange-800">You've used this month's credits</div>
+                <div class="text-orange-700 text-[11px]">A standard model costs 30 credits and you have 0. Pick a cheaper tier or move up a plan.</div>
+                <button onclick="generateModel()" class="btn-orange font-bold py-2 rounded text-center w-full shadow">
+                    Generate / See plans
+                </button>
+            </div>
         </div>
 
-        <!-- RIGHT PANEL: VIEWPORT & SCRIPT -->
-        <div class="flex-1 flex flex-col bg-[#0d1117] relative">
+        <!-- DREAPTA: PREVIEW 3D & SCRIPT -->
+        <div class="flex-1 bg-panel rounded-lg flex flex-col shadow-sm overflow-hidden relative">
             
-            <!-- Viewport Header Tabs -->
-            <div class="bg-card border-b border-custom px-4 flex items-center justify-between">
-                <div class="flex gap-4">
-                    <button id="tab-preview-btn" onclick="switchTab('preview')" class="py-3 text-sm font-semibold active-tab flex items-center gap-2">
-                        <i data-lucide="eye" class="w-4 h-4"></i> PREVIEW 3D
-                    </button>
-                    <button id="tab-script-btn" onclick="switchTab('script')" class="py-3 text-sm font-semibold text-gray-400 hover:text-white flex items-center gap-2">
-                        <i data-lucide="code" class="w-4 h-4"></i> SCRIPT (LUAU)
-                    </button>
-                </div>
-
+            <!-- Header Dreapta -->
+            <div class="p-3 border-b border-[#e1e3da] flex items-center justify-between bg-gray-50/50">
+                <span id="model-title" class="font-bold text-gray-800 uppercase tracking-wide">CREATE A STYLIZED 3D MODEL</span>
                 <div class="flex items-center gap-2">
-                    <button onclick="downloadLuaScript()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-1.5 rounded border border-custom flex items-center gap-1.5 text-gray-200">
-                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Descarcă .LUA
-                    </button>
-                    <button onclick="downloadObjModel()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-1.5 rounded border border-custom flex items-center gap-1.5 text-gray-200">
-                        <i data-lucide="box" class="w-3.5 h-3.5"></i> Descarcă .OBJ
-                    </button>
+                    <button onclick="switchTab('script')" id="btn-script" class="px-3 py-1 border border-gray-300 rounded font-semibold text-gray-600 hover:bg-white">SCRIPT</button>
+                    <button onclick="switchTab('preview')" id="btn-preview" class="px-3 py-1 border border-gray-300 rounded font-semibold bg-white text-black shadow-sm">PREVIEW</button>
                 </div>
             </div>
 
-            <!-- VIEWPORT 3D CANVAS -->
-            <div id="view-preview" class="flex-1 relative w-full h-full">
-                <div id="canvas-container" class="w-full h-full"></div>
-                <div class="absolute bottom-4 left-4 bg-card/80 backdrop-blur border border-custom px-3 py-1.5 rounded text-xs text-gray-300">
-                    <span id="model-stats">39 parts • 12.4 x 20.4 x 12.2 studs</span>
+            <!-- Visualizator 3D -->
+            <div id="view-preview" class="flex-1 relative">
+                <div id="canvas-3d" class="w-full h-full"></div>
+                <div class="absolute bottom-3 left-3 bg-white/90 border border-gray-300 px-2.5 py-1 rounded text-gray-700 font-semibold shadow-sm">
+                    39 parts • 12.4 × 20.4 × 12.2 studs
                 </div>
             </div>
 
-            <!-- SCRIPT VIEW -->
-            <div id="view-script" class="flex-1 hidden p-4 bg-[#0d1117] overflow-auto">
-                <pre><code id="script-code" class="text-xs text-green-400 font-mono leading-relaxed">-- Se generează scriptul Roblox Luau...</code></pre>
+            <!-- View Script -->
+            <div id="view-script" class="flex-1 hidden p-4 bg-gray-900 overflow-auto font-mono text-green-400 text-[11px]">
+                <pre id="code-output">-- Roblox Luau Script va apărea aici după generare...</pre>
             </div>
-        </div>
-    </div>
 
-    <!-- MODAL AUTH -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-card border border-custom w-full max-w-md rounded-xl p-6 relative">
-            <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
-            <h3 class="text-xl font-bold text-white mb-1">Conectează-te la AstreAi</h3>
-            <p class="text-xs text-gray-400 mb-4">Creează un cont pentru a primi 100 de credite gratuite!</p>
-
-            <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
-                <input type="text" placeholder="Nume utilizator" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
-                <input type="email" placeholder="Email" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
-                <input type="password" placeholder="Parolă" required class="w-full bg-[#0d1117] border border-custom p-2.5 rounded text-sm text-white focus:outline-none">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-2.5 rounded text-sm text-white transition">Autentificare / Înregistrare</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL BUY CREDITS -->
-    <div id="buy-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-card border border-custom w-full max-w-md rounded-xl p-6 relative">
-            <button onclick="closeModal('buy-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
-            <h3 class="text-xl font-bold text-white mb-1">Cumpără Credite AstreAi</h3>
-            <p class="text-xs text-gray-400 mb-4">Alege pachetul potrivit pentru proiectele tale Roblox.</p>
-
-            <div class="space-y-3">
-                <div class="border border-custom p-3 rounded-lg flex justify-between items-center bg-[#0d1117]">
-                    <div>
-                        <div class="font-bold text-white text-sm">100 Credite</div>
-                        <div class="text-xs text-gray-400">Aproximativ 3 modele Standard</div>
-                    </div>
-                    <button onclick="buyCredits(100)" class="bg-amber-500 text-black font-bold px-3 py-1.5 rounded text-xs hover:bg-amber-400">5.00$</button>
-                </div>
-                <div class="border border-amber-500/50 p-3 rounded-lg flex justify-between items-center bg-[#0d1117]">
-                    <div>
-                        <div class="font-bold text-white text-sm">300 Credite</div>
-                        <div class="text-xs text-amber-400 font-semibold">Cel mai popular</div>
-                    </div>
-                    <button onclick="buyCredits(300)" class="bg-amber-500 text-black font-bold px-3 py-1.5 rounded text-xs hover:bg-amber-400">12.00$</button>
-                </div>
+            <!-- Footer Bottom Bar (Revise) -->
+            <div class="p-3 border-t border-[#e1e3da] bg-white flex gap-2 items-center">
+                <input type="text" id="revise-input" placeholder='Ask for a change — "make the marquee wider"' class="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-gray-800 focus:outline-none">
+                <button onclick="generateModel()" class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded hover:bg-gray-300">Revise • 10</button>
             </div>
         </div>
+
     </div>
 
-    <!-- JAVASCRIPT APP LOGIC & THREE.JS RENDERER -->
+    <!-- SCRIPT THREE.JS PENTRU REDARE 3D -->
     <script>
-        let credits = 50;
-        let isLoggedIn = true;
-        let currentTierCost = 30;
-        let scene, camera, renderer, currentMeshGroup;
+        let scene, camera, renderer, currentGroup;
 
-        // Initialize Icons
-        lucide.createIcons();
-
-        // Three.js Setup
-        function init3D() {
-            const container = document.getElementById('canvas-container');
+        function init() {
+            const container = document.getElementById('canvas-3d');
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0d1117);
+            scene.background = new THREE.Color(0xedf0e6);
 
             camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(20, 15, 25);
+            camera.position.set(15, 12, 20);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -207,21 +154,19 @@
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
 
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-
+            // Lumini
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
             const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
             dirLight.position.set(10, 20, 15);
             scene.add(dirLight);
 
-            // Grid Floor
-            const grid = new THREE.GridHelper(40, 20, 0x30363d, 0x161b22);
-            grid.position.y = -5;
+            // Planșa / Podeaua
+            const grid = new THREE.GridHelper(30, 15, 0xb0b5a5, 0xd0d5c5);
+            grid.position.y = -4;
             scene.add(grid);
 
-            // Initial Tiger Load
-            generateTiger3D();
+            // Incarca model 3D implicit (Tiger / Animal)
+            buildTiger3D();
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -237,180 +182,108 @@
             });
         }
 
-        // Generate Blocky Roblox Tiger Model
-        function generateTiger3D() {
-            if (currentMeshGroup) scene.remove(currentMeshGroup);
-            currentMeshGroup = new THREE.Group();
+        function buildTiger3D() {
+            if (currentGroup) scene.remove(currentGroup);
+            currentGroup = new THREE.Group();
 
-            const orangeMat = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.3 });
-            const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2 });
-            const pinkMat = new THREE.MeshStandardMaterial({ color: 0xffb6c1, roughness: 0.4 });
+            const orange = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.3 });
+            const white = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+            const black = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2 });
+            const pink = new THREE.MeshStandardMaterial({ color: 0xffa07a, roughness: 0.4 });
 
-            // Body
-            const body = new THREE.Mesh(new THREE.BoxGeometry(6, 5, 8), orangeMat);
-            body.position.set(0, 0, 0);
-            currentMeshGroup.add(body);
+            // Corp
+            const body = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 7), orange);
+            currentGroup.add(body);
 
-            // White Belly
-            const belly = new THREE.Mesh(new THREE.BoxGeometry(6.1, 2, 8.1), whiteMat);
-            belly.position.set(0, -1.5, 0);
-            currentMeshGroup.add(belly);
+            // Burtă albă
+            const belly = new THREE.Mesh(new THREE.BoxGeometry(5.1, 1.8, 7.1), white);
+            belly.position.set(0, -1.2, 0);
+            currentGroup.add(belly);
 
-            // Head
-            const head = new THREE.Mesh(new THREE.BoxGeometry(5.5, 5, 5), orangeMat);
-            head.position.set(0, 4, 3.5);
-            currentMeshGroup.add(head);
+            // Cap
+            const head = new THREE.Mesh(new THREE.BoxGeometry(4.5, 4, 4), orange);
+            head.position.set(0, 3.2, 3);
+            currentGroup.add(head);
 
-            // Snout / Muzzle
-            const snout = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 2), whiteMat);
-            snout.position.set(0, 3, 6);
-            currentMeshGroup.add(snout);
+            // Bot
+            const snout = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.8, 1.8), white);
+            snout.position.set(0, 2.3, 5);
+            currentGroup.add(snout);
 
-            // Nose
-            const nose = new THREE.Mesh(new THREE.BoxGeometry(1, 0.8, 0.5), blackMat);
-            nose.position.set(0, 3.5, 6.8);
-            currentMeshGroup.add(nose);
+            // Ochi
+            const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.2), black);
+            eyeL.position.set(-1.2, 3.6, 5.1);
+            const eyeR = eyeL.clone(); eyeR.position.x = 1.2;
+            currentGroup.add(eyeL, eyeR);
 
-            // Eyes
-            const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.2, 0.2), blackMat);
-            eyeL.position.set(-1.6, 4.5, 6.1);
-            const eyeR = eyeL.clone();
-            eyeR.position.x = 1.6;
-            currentMeshGroup.add(eyeL, eyeR);
+            // Urechi
+            const earL = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 0.8), orange);
+            earL.position.set(-1.6, 5.6, 3);
+            const earInnerL = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.2), pink);
+            earInnerL.position.set(-1.6, 5.6, 3.4);
+            currentGroup.add(earL, earInnerL);
 
-            // Ears
-            const earL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1), orangeMat);
-            earL.position.set(-2, 7, 3.5);
-            const earInnerL = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.2), pinkMat);
-            earInnerL.position.set(-2, 7, 4);
-            currentMeshGroup.add(earL, earInnerL);
+            const earR = earL.clone(); earR.position.x = 1.6;
+            const earInnerR = earInnerL.clone(); earInnerR.position.x = 1.6;
+            currentGroup.add(earR, earInnerR);
 
-            const earR = earL.clone(); earR.position.x = 2;
-            const earInnerR = earInnerL.clone(); earInnerR.position.x = 2;
-            currentMeshGroup.add(earR, earInnerR);
-
-            // Legs
-            const legPositions = [[-2.2, -4.5, 2.5], [2.2, -4.5, 2.5], [-2.2, -4.5, -2.5], [2.2, -4.5, -2.5]];
-            legPositions.forEach(pos => {
-                const leg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4, 1.8), orangeMat);
-                leg.position.set(...pos);
-                const paw = new THREE.Mesh(new THREE.BoxGeometry(2, 1, 2), whiteMat);
-                paw.position.set(pos[0], -6, pos[2]);
-                currentMeshGroup.add(leg, paw);
+            // Picioare
+            [[-1.8, -3.5, 2], [1.8, -3.5, 2], [-1.8, -3.5, -2], [1.8, -3.5, -2]].forEach(p => {
+                const leg = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3, 1.5), orange);
+                leg.position.set(...p);
+                const paw = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 1.6), white);
+                paw.position.set(p[0], -4.8, p[2]);
+                currentGroup.add(leg, paw);
             });
 
-            // Tail
-            const tail = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 4), orangeMat);
-            tail.position.set(0, 1, -5.5);
-            tail.rotation.x = 0.3;
-            currentMeshGroup.add(tail);
-
-            scene.add(currentMeshGroup);
-            updateScriptView();
+            scene.add(currentGroup);
+            updateLuaScript();
         }
 
-        function updateScriptView() {
-            document.getElementById('script-code').innerText = 
-`-- Generated by AstreAi
+        function updateLuaScript() {
+            document.getElementById('code-output').innerText = 
+`-- Generated by AstreAi Studio
 local model = Instance.new("Model")
-model.Name = "CuteTigerPet"
+model.Name = "CuteTigerRoblox"
 
-local function createPart(name, size, cframe, color, material)
+local function createPart(name, size, cframe, color)
     local part = Instance.new("Part")
     part.Name = name
     part.Size = size
     part.CFrame = cframe
     part.BrickColor = BrickColor.new(color)
-    part.Material = material or Enum.Material.Plastic
+    part.Material = Enum.Material.Plastic
     part.Parent = model
     return part
 end
 
--- Body & Head
-createPart("Body", Vector3.new(6, 5, 8), CFrame.new(0, 5, 0), "Bright orange")
-createPart("Belly", Vector3.new(6.1, 2, 8.1), CFrame.new(0, 3.5, 0), "White")
-createPart("Head", Vector3.new(5.5, 5, 5), CFrame.new(0, 9, 3.5), "Bright orange")
+createPart("Body", Vector3.new(5, 4, 7), CFrame.new(0, 4, 0), "Bright orange")
+createPart("Belly", Vector3.new(5.1, 1.8, 7.1), CFrame.new(0, 2.8, 0), "White")
+createPart("Head", Vector3.new(4.5, 4, 4), CFrame.new(0, 7.2, 3), "Bright orange")
 
 model.Parent = workspace`;
         }
 
-        // Interacțiuni Interfață
         function setPrompt(text) {
             document.getElementById('prompt-input').value = text;
         }
 
-        function selectTier(tier, cost, el) {
-            currentTierCost = cost;
-            document.querySelectorAll('.tier-card').forEach(c => {
-                c.classList.remove('border-blue-500', 'border-2');
-                c.classList.add('border-custom');
-            });
-            el.classList.add('border-blue-500', 'border-2');
-        }
-
-        function handleGenerate() {
-            if (!isLoggedIn) {
-                openModal('auth-modal');
-                return;
-            }
-
-            if (credits < currentTierCost) {
-                openModal('buy-modal');
-                return;
-            }
-
-            credits -= currentTierCost;
-            document.getElementById('credits-count').innerText = `${credits} credits`;
-            generateTiger3D();
+        function generateModel() {
+            buildTiger3D();
+            alert("Modelul a fost generat în previzualizarea 3D!");
         }
 
         function switchTab(tab) {
             if (tab === 'preview') {
                 document.getElementById('view-preview').classList.remove('hidden');
                 document.getElementById('view-script').classList.add('hidden');
-                document.getElementById('tab-preview-btn').classList.add('active-tab');
-                document.getElementById('tab-script-btn').classList.remove('active-tab');
             } else {
                 document.getElementById('view-preview').classList.add('hidden');
                 document.getElementById('view-script').classList.remove('hidden');
-                document.getElementById('tab-script-btn').classList.add('active-tab');
-                document.getElementById('tab-preview-btn').classList.remove('active-tab');
             }
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-
-        function handleAuthSubmit(e) {
-            e.preventDefault();
-            isLoggedIn = true;
-            credits += 100;
-            document.getElementById('credits-count').innerText = `${credits} credits`;
-            closeModal('auth-modal');
-        }
-
-        function buyCredits(amount) {
-            credits += amount;
-            document.getElementById('credits-count').innerText = `${credits} credits`;
-            closeModal('buy-modal');
-        }
-
-        function downloadLuaScript() {
-            const code = document.getElementById('script-code').innerText;
-            const blob = new Blob([code], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'AstreAi_RobloxModel.lua';
-            a.click();
-        }
-
-        function downloadObjModel() {
-            alert('Modelul 3D (.OBJ) se descarcă...');
-        }
-
-        // Window Init
-        window.onload = init3D;
+        window.onload = init;
     </script>
 </body>
 </html>
