@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstreAi — Roblox 3D Generator</title>
+    <title>AstreAi — Roblox 3D AI Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -21,7 +21,7 @@
     <!-- BARA PORTOCALIE DE SUS -->
     <div id="top-banner" class="bg-[#ff5722] text-white px-4 py-1.5 flex items-center justify-between font-semibold">
         <div class="flex-1 text-center">
-            🚀 It's launch day — AstreAi is live. <a href="#" onclick="openModal('buy-modal')" class="underline ml-1">Get free credits</a>
+            🚀 AstreAi Live AI Generator connected to Gemini API
         </div>
         <button onclick="document.getElementById('top-banner').style.display='none'" class="text-white/80 hover:text-white font-bold">✕</button>
     </div>
@@ -58,9 +58,9 @@
 
             <!-- Suggestion Pills -->
             <div class="flex flex-wrap gap-1.5">
-                <button onclick="setPrompt('Cute 3D tiger character, blocky low-poly, orange with black stripes')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Tiger pet</button>
-                <button onclick="setPrompt('Treasure chest with gold coins')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Treasure chest</button>
-                <button onclick="setPrompt('Vending machine')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Vending machine</button>
+                <button onclick="setPrompt('Create a cute 3D tiger character in Roblox style, orange with black stripes')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Tiger pet</button>
+                <button onclick="setPrompt('Create a stylized 3D treasure chest with gold coins')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Treasure chest</button>
+                <button onclick="setPrompt('Create a retro Roblox vending machine with soda cans')" class="tag-pill px-2 py-1 rounded hover:bg-gray-300">Vending machine</button>
             </div>
 
             <!-- Detail Levels -->
@@ -84,9 +84,9 @@
 
             <!-- Notice / Generate Box -->
             <div id="status-box" class="border border-green-300 bg-green-50 p-3 rounded-lg flex flex-col gap-2 mt-auto">
-                <div id="status-title" class="font-bold text-green-800">Account Active — Credits Available</div>
-                <div id="status-desc" class="text-green-700 text-[11px]">Ready to generate your custom Roblox 3D asset.</div>
-                <button onclick="generateModel()" class="btn-orange font-bold py-2.5 rounded text-center w-full shadow flex items-center justify-center gap-2">
+                <div id="status-title" class="font-bold text-green-800">API Connected & Active</div>
+                <div id="status-desc" class="text-green-700 text-[11px]">Gata pentru generarea prin AI.</div>
+                <button id="generate-btn" onclick="generateWithAI()" class="btn-orange font-bold py-2.5 rounded text-center w-full shadow flex items-center justify-center gap-2">
                     GENERATE ROBLOX ASSET
                 </button>
             </div>
@@ -100,7 +100,6 @@
                 <span id="model-title" class="font-bold text-gray-800 uppercase tracking-wide">CREATE A STYLIZED 3D MODEL</span>
                 <div class="flex items-center gap-2">
                     <button onclick="downloadLuaScript()" class="px-2.5 py-1 border border-gray-300 bg-white rounded font-semibold text-gray-700 hover:bg-gray-50">SAVE .LUA</button>
-                    <button onclick="downloadObjModel()" class="px-2.5 py-1 border border-gray-300 bg-white rounded font-semibold text-gray-700 hover:bg-gray-50">SAVE .OBJ</button>
                     <button onclick="switchTab('script')" id="btn-script" class="px-3 py-1 border border-gray-300 rounded font-semibold text-gray-600 hover:bg-white">SCRIPT</button>
                     <button onclick="switchTab('preview')" id="btn-preview" class="px-3 py-1 border border-gray-300 rounded font-semibold bg-white text-black shadow-sm">PREVIEW</button>
                 </div>
@@ -110,77 +109,47 @@
             <div id="view-preview" class="flex-1 relative">
                 <div id="canvas-3d" class="w-full h-full"></div>
                 <div class="absolute bottom-3 left-3 bg-white/90 border border-gray-300 px-2.5 py-1 rounded text-gray-700 font-semibold shadow-sm">
-                    <span id="part-count">39 parts • 12.4 × 20.4 × 12.2 studs</span>
+                    <span id="part-count">AI Ready • Roblox Luau Generator</span>
                 </div>
             </div>
 
             <!-- View Script -->
             <div id="view-script" class="flex-1 hidden p-4 bg-gray-900 overflow-auto font-mono text-green-400 text-[11px]">
-                <pre id="code-output">-- Roblox Luau Script va apărea aici după generare...</pre>
+                <pre id="code-output">-- Apasă pe "GENERATE ROBLOX ASSET" pentru a crea scriptul prin AI...</pre>
             </div>
 
             <!-- Footer Bottom Bar (Revise) -->
             <div class="p-3 border-t border-[#e1e3da] bg-white flex gap-2 items-center">
                 <input type="text" id="revise-input" placeholder='Ask for a change — "make it bigger or change colors"' class="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 text-gray-800 focus:outline-none">
-                <button onclick="generateModel()" class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded hover:bg-gray-300">Revise • 10</button>
+                <button onclick="generateWithAI(true)" class="bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded hover:bg-gray-300">Revise • 10</button>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL AUTHENTICATION -->
+    <!-- MODALE AUTH & BUY -->
     <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-gray-300 w-full max-w-sm rounded-xl p-5 relative shadow-xl">
             <button onclick="closeModal('auth-modal')" class="absolute top-3 right-3 text-gray-500 font-bold">✕</button>
-            <h3 class="text-base font-bold text-gray-900 mb-1">Conectare / Înregistrare AstreAi</h3>
-            <p class="text-xs text-gray-500 mb-4">Primești +100 credite gratuite la conectare!</p>
-
-            <form onsubmit="handleAuthSubmit(event)" class="space-y-3">
+            <h3 class="text-base font-bold text-gray-900 mb-1">Conectare AstreAi</h3>
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-3 mt-3">
                 <input type="text" placeholder="Nume utilizator" required class="w-full border border-gray-300 p-2 rounded text-xs">
-                <input type="email" placeholder="Email" required class="w-full border border-gray-300 p-2 rounded text-xs">
-                <input type="password" placeholder="Parolă" required class="w-full border border-gray-300 p-2 rounded text-xs">
-                <button type="submit" class="w-full bg-[#ff5722] text-white font-bold py-2 rounded text-xs hover:bg-[#f4511e]">Conectează-te</button>
+                <button type="submit" class="w-full bg-[#ff5722] text-white font-bold py-2 rounded text-xs">Conectează-te</button>
             </form>
         </div>
     </div>
 
-    <!-- MODAL BUY CREDITS -->
     <div id="buy-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white border border-gray-300 w-full max-w-sm rounded-xl p-5 relative shadow-xl">
             <button onclick="closeModal('buy-modal')" class="absolute top-3 right-3 text-gray-500 font-bold">✕</button>
-            <h3 class="text-base font-bold text-gray-900 mb-1">Reîncarcă Credite AstreAi</h3>
-            <p class="text-xs text-gray-500 mb-4">Alege un pachet pentru a continua generarea.</p>
-
-            <div class="space-y-2">
-                <div class="border border-gray-200 p-3 rounded flex justify-between items-center bg-gray-50">
-                    <div>
-                        <div class="font-bold text-gray-800">+100 Credite</div>
-                        <div class="text-[10px] text-gray-500">Aproximativ 3 generări Standard</div>
-                    </div>
-                    <button onclick="buyCredits(100)" class="bg-[#ff5722] text-white font-bold px-3 py-1 rounded text-xs hover:bg-[#f4511e]">$5.00</button>
-                </div>
-                <div class="border-2 border-orange-400 p-3 rounded flex justify-between items-center bg-orange-50/30">
-                    <div>
-                        <div class="font-bold text-gray-800">+300 Credite</div>
-                        <div class="text-[10px] text-orange-600 font-semibold">Cel mai popular</div>
-                    </div>
-                    <button onclick="buyCredits(300)" class="bg-[#ff5722] text-white font-bold px-3 py-1 rounded text-xs hover:bg-[#f4511e]">$12.00</button>
-                </div>
-                <div class="border border-gray-200 p-3 rounded flex justify-between items-center bg-gray-50">
-                    <div>
-                        <div class="font-bold text-gray-800">+1000 Credite</div>
-                        <div class="text-[10px] text-gray-500">Pachet Pro Generator</div>
-                    </div>
-                    <button onclick="buyCredits(1000)" class="bg-[#ff5722] text-white font-bold px-3 py-1 rounded text-xs hover:bg-[#f4511e]">$25.00</button>
-                </div>
-            </div>
+            <h3 class="text-base font-bold text-gray-900 mb-1">Reîncarcă Credite</h3>
+            <button onclick="buyCredits(300)" class="w-full bg-[#ff5722] text-white font-bold py-2 mt-3 rounded text-xs">+300 Credite ($12.00)</button>
         </div>
     </div>
 
-    <!-- THREE.JS RENDERER & SCRIPT LOGIC -->
     <script>
+        const GEMINI_API_KEY = "AQ.Ab8RN6KqINUeAEY_IuKJKfFaA1rzeQc0gvuXrE5PU7-aIMia6A";
         let credits = 100;
-        let isLoggedIn = true;
         let selectedCost = 30;
         let scene, camera, renderer, currentGroup;
 
@@ -208,7 +177,7 @@
             grid.position.y = -4;
             scene.add(grid);
 
-            buildTiger3D();
+            buildPlaceholder3D();
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -224,165 +193,106 @@
             });
         }
 
-        function buildTiger3D() {
+        async function generateWithAI(isRevise = false) {
+            let promptText = document.getElementById('prompt-input').value;
+            if (isRevise) {
+                const reviseText = document.getElementById('revise-input').value;
+                if (reviseText) promptText += ". Adjustment: " + reviseText;
+            }
+
+            if (!promptText.trim()) {
+                alert("Te rog adaugă un prompt mai întâi!");
+                return;
+            }
+
+            if (credits < selectedCost) {
+                openModal('buy-modal');
+                return;
+            }
+
+            const btn = document.getElementById('generate-btn');
+            btn.innerText = "GENERATING SCRIPT WITH AI...";
+            btn.disabled = true;
+
+            try {
+                const systemPrompt = `You are a Roblox Luau Script Generator. Generate a complete, standalone Luau script for Roblox Studio that creates a high quality blocky 3D model according to the request. Always return valid Luau code wrapped in Roblox Instance.new syntax. Do not write explanations, return ONLY the raw script.`;
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: `${systemPrompt}\n\nUser Prompt: ${promptText}` }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                let generatedScript = "";
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    generatedScript = data.candidates[0].content.parts[0].text;
+                    generatedScript = generatedScript.replace(/```lua/g, '').replace(/```/g, '').trim();
+                } else {
+                    generatedScript = `-- Standard Fallback Roblox Script for: ${promptText}\nlocal model = Instance.new("Model")\nmodel.Name = "GeneratedAsset"\nlocal part = Instance.new("Part")\npart.Size = Vector3.new(4,4,4)\npart.BrickColor = BrickColor.new("Bright orange")\npart.Parent = model\nmodel.Parent = workspace`;
+                }
+
+                document.getElementById('code-output').innerText = generatedScript;
+                credits -= selectedCost;
+                updateCreditsDisplay();
+                buildPlaceholder3D();
+                switchTab('script');
+
+            } catch (err) {
+                console.error(err);
+                alert("A apărut o eroare la apelarea API-ului. Verifică consola browser-ului.");
+            } finally {
+                btn.innerText = "GENERATE ROBLOX ASSET";
+                btn.disabled = false;
+            }
+        }
+
+        function buildPlaceholder3D() {
             if (currentGroup) scene.remove(currentGroup);
             currentGroup = new THREE.Group();
 
             const orange = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.3 });
             const white = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
             const black = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2 });
-            const pink = new THREE.MeshStandardMaterial({ color: 0xffa07a, roughness: 0.4 });
 
-            // Corp & Burtă
             const body = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 7), orange);
-            const belly = new THREE.Mesh(new THREE.BoxGeometry(5.1, 1.8, 7.1), white);
-            belly.position.set(0, -1.2, 0);
-            currentGroup.add(body, belly);
-
-            // Cap, Bot, Nas, Ochi
             const head = new THREE.Mesh(new THREE.BoxGeometry(4.5, 4, 4), orange);
             head.position.set(0, 3.2, 3);
             const snout = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.8, 1.8), white);
             snout.position.set(0, 2.3, 5);
-            const nose = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.6, 0.3), black);
-            nose.position.set(0, 2.7, 5.8);
 
-            const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.2), black);
-            eyeL.position.set(-1.2, 3.6, 5.1);
-            const eyeR = eyeL.clone(); eyeR.position.x = 1.2;
-            currentGroup.add(head, snout, nose, eyeL, eyeR);
-
-            // Urechi
-            const earL = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 0.8), orange);
-            earL.position.set(-1.6, 5.6, 3);
-            const earInnerL = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.2), pink);
-            earInnerL.position.set(-1.6, 5.6, 3.4);
-            const earR = earL.clone(); earR.position.x = 1.6;
-            const earInnerR = earInnerL.clone(); earInnerR.position.x = 1.6;
-            currentGroup.add(earL, earInnerL, earR, earInnerR);
-
-            // Picioare & Labe
-            [[-1.8, -3.5, 2], [1.8, -3.5, 2], [-1.8, -3.5, -2], [1.8, -3.5, -2]].forEach(p => {
-                const leg = new THREE.Mesh(new THREE.BoxGeometry(1.5, 3, 1.5), orange);
-                leg.position.set(...p);
-                const paw = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.8, 1.6), white);
-                paw.position.set(p[0], -4.8, p[2]);
-                currentGroup.add(leg, paw);
-            });
-
+            currentGroup.add(body, head, snout);
             scene.add(currentGroup);
-            updateLuaScript();
         }
 
-        function updateLuaScript() {
-            document.getElementById('code-output').innerText = 
-`-- Generated by AstreAi Studio
-local model = Instance.new("Model")
-model.Name = "CuteTigerRoblox"
-
-local function createPart(name, size, cframe, color)
-    local part = Instance.new("Part")
-    part.Name = name
-    part.Size = size
-    part.CFrame = cframe
-    part.BrickColor = BrickColor.new(color)
-    part.Material = Enum.Material.Plastic
-    part.Parent = model
-    return part
-end
-
-createPart("Body", Vector3.new(5, 4, 7), CFrame.new(0, 4, 0), "Bright orange")
-createPart("Belly", Vector3.new(5.1, 1.8, 7.1), CFrame.new(0, 2.8, 0), "White")
-createPart("Head", Vector3.new(4.5, 4, 4), CFrame.new(0, 7.2, 3), "Bright orange")
-
-model.Parent = workspace`;
-        }
-
-        function setPrompt(text) {
-            document.getElementById('prompt-input').value = text;
-        }
-
+        function setPrompt(text) { document.getElementById('prompt-input').value = text; }
         function selectTier(tier, cost, element) {
             selectedCost = cost;
-            document.querySelectorAll('.tier-card').forEach(el => {
-                el.className = 'tier-card border border-gray-200 bg-gray-50 p-2 rounded cursor-pointer text-gray-600';
-            });
+            document.querySelectorAll('.tier-card').forEach(el => el.className = 'tier-card border border-gray-200 bg-gray-50 p-2 rounded cursor-pointer text-gray-600');
             element.className = 'tier-card border-2 border-orange-500 bg-orange-50/30 p-2 rounded cursor-pointer text-orange-900 font-bold';
         }
 
-        function generateModel() {
-            if (!isLoggedIn) {
-                openModal('auth-modal');
-                return;
-            }
-
-            if (credits < selectedCost) {
-                updateStatusBox(false);
-                openModal('buy-modal');
-                return;
-            }
-
-            credits -= selectedCost;
-            updateCreditsDisplay();
-            buildTiger3D();
-        }
-
         function updateCreditsDisplay() {
-            const badge = document.getElementById('credits-badge');
-            badge.innerText = `${credits} credits`;
-            if (credits < selectedCost) {
-                badge.className = 'border border-red-300 bg-red-50 text-red-600 px-2.5 py-1 rounded-full font-bold';
-                updateStatusBox(false);
-            } else {
-                badge.className = 'border border-green-300 bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold';
-                updateStatusBox(true);
-            }
-        }
-
-        function updateStatusBox(hasEnoughCredits) {
-            const box = document.getElementById('status-box');
-            const title = document.getElementById('status-title');
-            const desc = document.getElementById('status-desc');
-
-            if (!hasEnoughCredits) {
-                box.className = 'border border-orange-300 bg-orange-50 p-3 rounded-lg flex flex-col gap-2 mt-auto';
-                title.className = 'font-bold text-orange-800';
-                title.innerText = "You've used your credits";
-                desc.className = 'text-orange-700 text-[11px]';
-                desc.innerText = `A model costs ${selectedCost} credits and you have ${credits}. Please reload your credits to continue.`;
-            } else {
-                box.className = 'border border-green-300 bg-green-50 p-3 rounded-lg flex flex-col gap-2 mt-auto';
-                title.className = 'font-bold text-green-800';
-                title.innerText = 'Account Active — Credits Available';
-                desc.className = 'text-green-700 text-[11px]';
-                desc.innerText = 'Ready to generate your custom Roblox 3D asset.';
-            }
+            document.getElementById('credits-badge').innerText = `${credits} credits`;
         }
 
         function switchTab(tab) {
             if (tab === 'preview') {
                 document.getElementById('view-preview').classList.remove('hidden');
                 document.getElementById('view-script').classList.add('hidden');
-                document.getElementById('btn-preview').className = 'px-3 py-1 border border-gray-300 rounded font-semibold bg-white text-black shadow-sm';
-                document.getElementById('btn-script').className = 'px-3 py-1 border border-gray-300 rounded font-semibold text-gray-600 hover:bg-white';
             } else {
                 document.getElementById('view-preview').classList.add('hidden');
                 document.getElementById('view-script').classList.remove('hidden');
-                document.getElementById('btn-script').className = 'px-3 py-1 border border-gray-300 rounded font-semibold bg-white text-black shadow-sm';
-                document.getElementById('btn-preview').className = 'px-3 py-1 border border-gray-300 rounded font-semibold text-gray-600 hover:bg-white';
             }
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-
-        function handleAuthSubmit(e) {
-            e.preventDefault();
-            isLoggedIn = true;
-            credits += 100;
-            updateCreditsDisplay();
-            closeModal('auth-modal');
-        }
 
         function buyCredits(amount) {
             credits += amount;
@@ -397,10 +307,6 @@ model.Parent = workspace`;
             a.href = URL.createObjectURL(blob);
             a.download = 'AstreAi_Model.lua';
             a.click();
-        }
-
-        function downloadObjModel() {
-            alert('Modelul 3D (.OBJ) se descarcă...');
         }
 
         window.onload = init;
